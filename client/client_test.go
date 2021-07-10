@@ -32,10 +32,7 @@ func Test_makeGetRequest(t *testing.T) {
 			name: "case 1",
 			args: args{
 				req: func() *http.Request {
-					req, err := http.NewRequest(http.MethodGet, "https://www.google.com", nil)
-					if err != nil {
-						t.Errorf("error in creating request: %s", err.Error())
-					}
+					req, _ := http.NewRequest(http.MethodGet, "https://www.google.com", nil)
 					return req
 				}(),
 				client: func() Client {
