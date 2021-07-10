@@ -15,14 +15,17 @@ var someError = errors.New("some error")
 
 func Test_makeGetRequest(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	type want struct {
+		resp *http.Response
+	}
 	type args struct {
 		client Client
 		req    *http.Request
-		resp   *http.Response
 	}
 	tests := []struct {
 		name    string
 		args    args
+		want    want
 		wantErr error
 	}{
 		{
@@ -46,6 +49,8 @@ func Test_makeGetRequest(t *testing.T) {
 					client.EXPECT().Do(req).Times(1).Return(resp, nil)
 					return client
 				}(),
+			},
+			want: want{
 				resp: func() *http.Response {
 					return &http.Response{
 						Status:     "200 OK",
@@ -74,6 +79,8 @@ func Test_makeGetRequest(t *testing.T) {
 					client.EXPECT().Do(req).Times(1).Return(resp, someError)
 					return client
 				}(),
+			},
+			want: want{
 				resp: func() *http.Response {
 					return &http.Response{
 						Status:     "200 OK",
@@ -89,7 +96,7 @@ func Test_makeGetRequest(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			resp, err := makeGetRequest(tt.args.client, tt.args.req)
 			assert.ErrorIs(t, err, tt.wantErr, "makeGetRequest erorr mismatch")
-			assert.Equal(t, tt.args.resp, resp, "makeGetRequest response mismatch")
+			assert.Equal(t, tt.want.resp, resp, "makeGetRequest response mismatch")
 		})
 	}
 }
